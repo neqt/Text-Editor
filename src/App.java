@@ -44,7 +44,12 @@ public class App extends Application {
                 + "-fx-border-style: solid inside, solid outside;");
         BPane.setCenter(textArea);
         // sence
-        primaryStage.setTitle("Text Editor - " + textFile.getName());
+        if (textFile.getEdited()) {
+            primaryStage.setTitle("Text Editor - " + "*"+ textFile.getName());
+        }
+        else {
+            primaryStage.setTitle("Text Editor - " + textFile.getName());
+        }
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -172,7 +177,7 @@ public class App extends Application {
                 Read_alert.setTitle("Read-only");
                 Read_alert.setHeaderText("File opened in Read-only mode.");
                 Read_alert.setContentText("You must use Save as to save changes.");
-                Read_alert.getButtonTypes().setAll(buttonSave, buttonCancel);
+                Read_alert.getButtonTypes().setAll(buttonSaveAs, buttonCancel);
                 Optional<ButtonType> result = Read_alert.showAndWait();
                 if (result.isPresent() && result.get() == buttonSaveAs) {
                     try {
@@ -181,9 +186,9 @@ public class App extends Application {
                         e.printStackTrace();
                     }
                 } else if (result.isPresent() && result.get() == buttonCancel) {
-                    New(stage);
+                    //New(stage);
                 }
-                Read_alert.show();
+                // Read_alert.show();
             } else {
                 java.io.PrintWriter output = new java.io.PrintWriter(textFile.getFile());
                 output.write(textArea.getText());
@@ -230,16 +235,30 @@ public class App extends Application {
                 textArea.setText(textFile.getText());
                 saveFromOpen = textFile.getFile();
             }
+            stage.setTitle("Text Edittor - " + textFile.getFile().getName());
         }
-        openedFileName = openedFile.getName();
-        stage.setTitle("Text Edittor - " + openedFileName);
+        // openedFileName = openedFile.getName();
     }
 
     public void New(Stage stage) throws FileNotFoundException {
         if (!textArea.getText().isEmpty()) {
             alert_show(stage);
-            textArea.clear();
+            textArea.setText("");
+            textFile.setFile(null);
+            textFile.setName("Untitled");
             stage.setTitle("Text Editor - " + textFile.getName());
         }
+        // if (textFile.getFile() == null && !textArea.getText().isEmpty()) {
+        //     alert_show(stage);
+        // }
+        // else if (textFile.getFile() != null && textFile.isEdited()) {
+        //     alert_show(stage);
+        // }
+        // else {
+        //     textArea.setText("");
+        //     textFile.setFile(null);
+        //     textFile.setName("Untitled");
+        //     stage.setTitle("Text Editor - " + textFile.getName());
+        // }
     }
 }

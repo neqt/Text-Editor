@@ -36,8 +36,12 @@ public class TextFile {
         return this.saved;
     }
 
-    public boolean isEdited() {
+    public boolean getEdited() {
         return edited;
+    }
+
+    public boolean isEdited() {
+        return !getText().equals(getText());
     }
 
     public String getText() {
