@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import static java.nio.charset.StandardCharsets.UTF_8;  
+// import java.io.PrintStream;
+// import static java.nio.charset.StandardCharsets.UTF_8;  
 import java.util.Scanner;
 
 public class TextFile {
@@ -12,11 +12,12 @@ public class TextFile {
     private File file;
     private String text = "";
 
-    public TextFile(File file, String name, boolean opened, boolean saved) {
+    public TextFile(File file, String name, boolean opened, boolean saved, boolean edited) {
         this.file = file;
         this.name = name;
         this.opened = opened;
         this.saved = saved;
+        this.edited = edited;
     }
 
     public boolean isOpened() {
@@ -35,7 +36,12 @@ public class TextFile {
         return this.saved;
     }
 
+    public boolean isEdited() {
+        return edited;
+    }
+
     public String getText() {
+        text = "";
         try {
             //PrintStream out = new PrintStream(System.out, true, UTF_8);
             Scanner input = new Scanner(file);

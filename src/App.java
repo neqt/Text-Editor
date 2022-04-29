@@ -1,20 +1,24 @@
 import java.io.*;
 import java.util.Optional;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 
 public class App extends Application {
     // Window
+    HBox paneDetail = new HBox(5);
     BorderPane BPane = new BorderPane();
     Scene scene = new Scene(BPane, 600, 400);
     static TextArea textArea = new TextArea();
@@ -23,7 +27,9 @@ public class App extends Application {
     ButtonType buttonSave = new ButtonType("Save");
     ButtonType buttonDontSave = new ButtonType("Don't save");
     ButtonType buttonCancel = new ButtonType("Cancel");
-    TextFile textFile = new TextFile(null, "Untitled", false, false);
+    ButtonType buttonSaveAs = new ButtonType("Save as");
+    Slider slider = new Slider();
+    TextFile textFile = new TextFile(null, "Untitled", false, false, false);
     File saveFromOpen;
     String openedFileName;
 
@@ -34,7 +40,7 @@ public class App extends Application {
         // MenuBar
         setMenuBar(primaryStage);
         // TextArea
-        textArea.setStyle("-fx-border-color: transparent; -fx-border-radius: 2; -fx-border-insets: 0, 0, 0, 0; "
+        textArea.setStyle("-fx-border-color: transparent; -fx-border-radius: 3; -fx-border-insets: 0, 0, 0, 0; "
                 + "-fx-border-style: solid inside, solid outside;");
         BPane.setCenter(textArea);
         // sence
@@ -67,6 +73,12 @@ public class App extends Application {
         }
     }
 
+    public void setDetailBar(Stage stage) {
+        BPane.setBottom(paneDetail);
+        paneDetail.setAlignment(Pos.CENTER);
+        slider.setMax(5);
+    }
+
     public void setMenuBar(Stage stage) throws IOException {
         MenuBar menubar = new MenuBar();
         BPane.setTop(menubar);
@@ -79,9 +91,10 @@ public class App extends Application {
         MenuItem File_ExitButton = new MenuItem("Exit");
         // setFileAction
         File_NewButton.setOnAction(e -> {
-            if (!textArea.getText().isEmpty()) {
-                alert_show(stage);
-                textArea.clear();
+            try {
+                New(stage);
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
             }
         });
         File_OpenButton.setOnAction(e -> {
@@ -155,23 +168,22 @@ public class App extends Application {
     public void Save(Stage stage) throws FileNotFoundException {
         if (textFile.getFile() != null) {
             if (!saveFromOpen.canWrite()) {
-                //alert_show(stage);
                 Alert Read_alert = new Alert(Alert.AlertType.WARNING);
                 Read_alert.setTitle("Read-only");
                 Read_alert.setHeaderText("File opened in Read-only mode.");
                 Read_alert.setContentText("You must use Save as to save changes.");
                 Read_alert.getButtonTypes().setAll(buttonSave, buttonCancel);
-                Read_alert.show();
-
                 Optional<ButtonType> result = Read_alert.showAndWait();
-                if (result.isPresent() && result.get() == buttonSave) {
-                    System.out.print("save as");
+                if (result.isPresent() && result.get() == buttonSaveAs) {
                     try {
                         SaveAs(stage);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                } else if (result.isPresent() && result.get() == buttonCancel) {
+                    New(stage);
                 }
+                Read_alert.show();
             } else {
                 java.io.PrintWriter output = new java.io.PrintWriter(textFile.getFile());
                 output.write(textArea.getText());
@@ -223,17 +235,11 @@ public class App extends Application {
         stage.setTitle("Text Edittor - " + openedFileName);
     }
 
-    // public void New(Stage stage) throws FileNotFoundException {
-    //     if (textFile.getOpened() && !textFile.getSaved()) {
-    //         System.out.println("1");
-    //         //textFile.close();
-    //         Save(stage);
-    //     } else if (!textFile.getOpened()) {
-    //         System.out.println("2");
-    //         SaveAs(stage);
-    //     } else {
-    //         System.out.println("3");
-    //         textFile.getClass();
-    //     }
-    // }
+    public void New(Stage stage) throws FileNotFoundException {
+        if (!textArea.getText().isEmpty()) {
+            alert_show(stage);
+            textArea.clear();
+            stage.setTitle("Text Editor - " + textFile.getName());
+        }
+    }
 }
