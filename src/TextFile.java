@@ -1,23 +1,19 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-// import java.io.PrintStream;
-// import static java.nio.charset.StandardCharsets.UTF_8;  
 import java.util.Scanner;
 
 public class TextFile {
     private String name;
     private boolean opened;
     private boolean saved;
-    private boolean edited;
     private File file;
-    private String text = "";
+    private String text;
 
-    public TextFile(File file, String name, boolean opened, boolean saved, boolean edited) {
+    public TextFile(File file, String name, boolean opened, boolean saved) {
         this.file = file;
         this.name = name;
         this.opened = opened;
         this.saved = saved;
-        this.edited = edited;
     }
 
     public boolean isOpened() {
@@ -36,18 +32,9 @@ public class TextFile {
         return this.saved;
     }
 
-    public boolean getEdited() {
-        return edited;
-    }
-
-    public boolean isEdited() {
-        return !getText().equals(getText());
-    }
-
     public String getText() {
-        text = "";
         try {
-            //PrintStream out = new PrintStream(System.out, true, UTF_8);
+            text = "";
             Scanner input = new Scanner(file);
             while (input.hasNext()) {
                 text += input.nextLine() + "\n";
@@ -64,7 +51,9 @@ public class TextFile {
     }
 
     public String getName() {
-        //name = file.getName();
+        if (file != null) {
+            name = file.getName();
+        }
         return name;
     }
 
@@ -91,15 +80,7 @@ public class TextFile {
     public boolean isTextFile() {
         String extension = "";
         int i = file.getName().lastIndexOf('.');
-        if (i >= 0) {
-            extension = file.getName().substring(i + 1);
-            if (extension.equals("txt")) {
-                return true;
-            } 
-            else {
-                return false;
-            }
-        }
-        return isTextFile();
+        extension = file.getName().substring(i + 1);
+        return i >= 0 && extension.equals("txt");
     }
 }
